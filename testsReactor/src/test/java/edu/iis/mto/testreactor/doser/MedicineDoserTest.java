@@ -1,6 +1,7 @@
 package edu.iis.mto.testreactor.doser;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 import edu.iis.mto.testreactor.doser.infuser.Infuser;
 import edu.iis.mto.testreactor.doser.infuser.InfuserException;
@@ -43,7 +44,14 @@ class MedicineDoserTest {
 	@Test
 	void dosingTest_shouldResultInSucces() {
 		DosingResult dosingResult = medicineDoser.dose(recipe);
-		assertEquals(dosingResult, DosingResult.SUCCESS);
+		assertEquals(DosingResult.SUCCESS, dosingResult);
+	}
+
+	@Test
+	void infuserExceptionTest() throws InfuserException {
+		Mockito.doThrow(InfuserException.class).when(infuser).dispense(Mockito.any(), Mockito.any());
+		DosingResult dosingResult = medicineDoser.dose(recipe);
+		Mockito.verify(dosageLog).logDifuserError(recipe.getDose(), new InfuserException().getMessage());
 	}
 
 	@Test
@@ -57,6 +65,7 @@ class MedicineDoserTest {
 		order.verify(clock).wait(recipe.getDose().getPeriod());
 		order.verify(dosageLog).logEnd();
 	}
+
 
 
 
