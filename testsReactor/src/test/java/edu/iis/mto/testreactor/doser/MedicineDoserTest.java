@@ -26,6 +26,9 @@ class MedicineDoserTest {
 	private Infuser infuser;
 	private MedicineDoser medicineDoser;
 	private Receipe recipe;
+	private int inferiorAmount = 1;
+	private final int exceedingAmount = 100;
+	private final String existingMedicineName = "APAP";
 
 	@Test
 	void itCompiles() {
@@ -35,10 +38,10 @@ class MedicineDoserTest {
 	@BeforeEach
 	void setUp() {
 		medicineDoser = new MedicineDoser(infuser, dosageLog, clock);
-		recipe = Receipe.of(Medicine.of("APAP"),
-				Dose.of(Capacity.of(1, CapacityUnit.MILILITER),
-						Period.of(1, TimeUnit.DAYS)), 1);
-		medicineDoser.add(MedicinePackage.of(Medicine.of("APAP"), Capacity.of(100, CapacityUnit.MILILITER)));
+		recipe = Receipe.of(Medicine.of(existingMedicineName),
+				Dose.of(Capacity.of(inferiorAmount, CapacityUnit.MILILITER),
+						Period.of(1, TimeUnit.DAYS)), inferiorAmount);
+		medicineDoser.add(MedicinePackage.of(Medicine.of(existingMedicineName), Capacity.of(100, CapacityUnit.MILILITER)));
 	}
 
 	@Test
@@ -49,18 +52,19 @@ class MedicineDoserTest {
 
 	@Test
 	void notEnoughInMedicinesTrayTest_shouldResultInError() {
-		recipe = Receipe.of(Medicine.of("APAP"),
-				Dose.of(Capacity.of(100, CapacityUnit.MILILITER),
-						Period.of(1, TimeUnit.DAYS)), 100);
+		recipe = Receipe.of(Medicine.of(existingMedicineName),
+				Dose.of(Capacity.of(exceedingAmount, CapacityUnit.MILILITER),
+						Period.of(1, TimeUnit.DAYS)), exceedingAmount);
 		DosingResult dosingResult = medicineDoser.dose(recipe);
 		assertEquals(DosingResult.ERROR, dosingResult);
 	}
 
 	@Test
 	void notInMedicinesTrayTest_shouldResultInError() {
-		recipe = Receipe.of(Medicine.of("ABAP"),
-				Dose.of(Capacity.of(1, CapacityUnit.MILILITER),
-						Period.of(1, TimeUnit.DAYS)), 1);
+		String nonExisitngName = "IBUM";
+		recipe = Receipe.of(Medicine.of(nonExisitngName),
+				Dose.of(Capacity.of(inferiorAmount, CapacityUnit.MILILITER),
+						Period.of(inferiorAmount, TimeUnit.DAYS)), inferiorAmount);
 		DosingResult dosingResult = medicineDoser.dose(recipe);
 		assertEquals(DosingResult.ERROR, dosingResult);
 	}
