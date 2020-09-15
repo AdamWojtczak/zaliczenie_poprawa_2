@@ -48,10 +48,12 @@ class MedicineDoserTest {
 	}
 
 	@Test
-	void infuserExceptionTest() throws InfuserException {
-		Mockito.doThrow(InfuserException.class).when(infuser).dispense(Mockito.any(), Mockito.any());
+	void notEnoughMedicineInStoragetest_shouldResultInError() {
+		recipe = Receipe.of(Medicine.of("APAP"),
+				Dose.of(Capacity.of(100, CapacityUnit.MILILITER),
+						Period.of(1, TimeUnit.DAYS)), 100);
 		DosingResult dosingResult = medicineDoser.dose(recipe);
-		Mockito.verify(dosageLog).logDifuserError(recipe.getDose(), new InfuserException().getMessage());
+		assertEquals(DosingResult.ERROR, dosingResult);
 	}
 
 	@Test
@@ -64,6 +66,13 @@ class MedicineDoserTest {
 		order.verify(dosageLog).logEndDose(recipe.getMedicine(), recipe.getDose());
 		order.verify(clock).wait(recipe.getDose().getPeriod());
 		order.verify(dosageLog).logEnd();
+	}
+
+	@Test
+	void infuserExceptionTest() throws InfuserException {
+		Mockito.doThrow(InfuserException.class).when(infuser).dispense(Mockito.any(), Mockito.any());
+		medicineDoser.dose(recipe);
+		Mockito.verify(dosageLog).logDifuserError(recipe.getDose(), new InfuserException().getMessage());
 	}
 
 

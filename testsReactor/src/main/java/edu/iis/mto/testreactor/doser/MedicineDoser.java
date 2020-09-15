@@ -27,9 +27,9 @@ public class MedicineDoser {
     }
 
     public DosingResult dose(Receipe receipe) {
-        MedicinePackage medicinePackage = getMedicinePackage(receipe);
         DosingResult result = DosingResult.SUCCESS;
         try {
+            MedicinePackage medicinePackage = getMedicinePackage(receipe);
             dosageLog.logStart();
             for (int i = 0; i < receipe.getNumber(); i++) {
                 dispenseSingleDose(receipe, medicinePackage);
