@@ -48,13 +48,23 @@ class MedicineDoserTest {
 	}
 
 	@Test
-	void notEnoughMedicineInStoragetest_shouldResultInError() {
+	void notEnoughInMedicinesTrayTest_shouldResultInError() {
 		recipe = Receipe.of(Medicine.of("APAP"),
 				Dose.of(Capacity.of(100, CapacityUnit.MILILITER),
 						Period.of(1, TimeUnit.DAYS)), 100);
 		DosingResult dosingResult = medicineDoser.dose(recipe);
 		assertEquals(DosingResult.ERROR, dosingResult);
 	}
+
+	@Test
+	void notInMedicinesTrayTest_shouldResultInError() {
+		recipe = Receipe.of(Medicine.of("ABAP"),
+				Dose.of(Capacity.of(1, CapacityUnit.MILILITER),
+						Period.of(1, TimeUnit.DAYS)), 1);
+		DosingResult dosingResult = medicineDoser.dose(recipe);
+		assertEquals(DosingResult.ERROR, dosingResult);
+	}
+
 
 	@Test
 	void callOrderTest() throws InfuserException {
